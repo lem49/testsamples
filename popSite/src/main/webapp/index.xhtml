@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<body>
+
+	<ui:composition template="./WEB-INF/template.xhtml">
+
+		<ui:define name="content">
+			<p:panelGrid columns="1">
+				<h:form id="newCustomer">
+					<p:commandButton value="new Customer" update=":newCustomerDialog"
+						oncomplete="PF('newCustomer').show()" />
+				</h:form>
+				<h:form id="names">
+					<p:dataTable id="customerTable"
+						value="#{customerSessionBean.customerNames}" var="c"
+						selectionMode="single"
+						selection="#{customerSessionBean.selectedElement}"
+						rowKey="#{c.id}">
+						<p:ajax event="rowSelect"
+							listener="#{customerSessionBean.onRowSelect}"
+							update="customerDialog" oncomplete="PF('nameDialog').show()" />
+						<p:ajax event="rowUnselect"
+							listener="#{customerSessionBean.onRowUnselect}"
+							update="customerDialog" />
+						<p:column>#{c.first}</p:column>
+					</p:dataTable>
+				</h:form>
+			</p:panelGrid>
+			<h:form id="newCustomerDialog">
+				<p:dialog id="newCustomerDial" widgetVar="newCustomer" modal="true" header="new Customer">
+					<p:panelGrid columns="2">
+						<p:outputLabel for="firstName" value="first name" />
+						<p:inputText id="firstName"
+							value="#{customerSessionBean.firstName}" />
+						<p:outputLabel for="lastName" value="last name" />
+						<p:inputText id="lastName" value="#{customerSessionBean.lastName}" />
+						<p:commandButton value="save"
+							actionListener="#{customerSessionBean.save()}"
+							update=":names:customerTable"
+							oncomplete="PF('newCustomer').hide()" />
+					</p:panelGrid>
+				</p:dialog>
+			</h:form>
+			<h:form id="customerDialog">
+				<p:dialog id="customerDialog" header="Name Info" modal="true"
+					widgetVar="nameDialog">
+					<p:outputPanel id="customerDia">
+						<p:panelGrid columns="2"
+							rendered="#{not empty customerSessionBean.selectedElement}">
+							<h:outputText value="First name" />
+							<h:outputText
+								value="#{customerSessionBean.selectedElement.first}" />
+							<h:outputText value="Last name" />
+							<h:outputText value="#{customerSessionBean.selectedElement.last}" />
+						</p:panelGrid>
+					</p:outputPanel>
+				</p:dialog>
+			</h:form>
+		</ui:define>
+
+	</ui:composition>
+
+</body>
+</html>
